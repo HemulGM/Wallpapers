@@ -5,9 +5,9 @@ uses
   FMX.Forms,
   FMX.Types,
   Wall.Main in 'Wall.Main.pas' {FormMain},
-  REST.Handler in '..\RESTHandler\REST.Handler.pas',
-  Wall.AlphaCoders.API in '..\Wall.AlphaCoders.API\Wall.AlphaCoders.API.pas',
-  Wall.View.Image in 'Wall.View.Image.pas' {FrameImage: TFrame};
+  Wall.View.Image in 'Wall.View.Image.pas' {FrameImage: TFrame},
+  REST.Handler in 'REST.Handler.pas',
+  Wall.AlphaCoders.API in 'Wall.AlphaCoders.API.pas';
 
 {$R *.res}
 
