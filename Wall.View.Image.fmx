@@ -1,0 +1,59 @@
+object FrameImage: TFrameImage
+  Size.Width = 320.000000000000000000
+  Size.Height = 200.000000000000000000
+  Size.PlatformDefault = False
+  object RectangleBG: TRectangle
+    Align = Client
+    Fill.Color = xFF949494
+    HitTest = False
+    Size.Width = 320.000000000000000000
+    Size.Height = 200.000000000000000000
+    Size.PlatformDefault = False
+    Stroke.Kind = None
+  end
+  object LayoutClient: TLayout
+    Align = Client
+    ClipChildren = True
+    HitTest = True
+    Size.Width = 320.000000000000000000
+    Size.Height = 200.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    OnClick = LayoutClientClick
+    object Image: TImage
+      MultiResBitmap.Height = 1080
+      MultiResBitmap.Width = 1920
+      MultiResBitmap = <
+        item
+        end>
+      Align = Center
+      HitTest = False
+      MarginWrapMode = Center
+      Size.Width = 320.000000000000000000
+      Size.Height = 200.000000000000000000
+      Size.PlatformDefault = False
+      WrapMode = Stretch
+      object Rectangle1: TRectangle
+        Align = Client
+        Fill.Kind = None
+        HitTest = False
+        Size.Width = 320.000000000000000000
+        Size.Height = 200.000000000000000000
+        Size.PlatformDefault = False
+        Stroke.Color = xFFFF0F0F
+        Stroke.Dash = Dash
+        Visible = False
+      end
+    end
+    object RectAnimationImage: TRectAnimation
+      Duration = 0.200000002980232200
+      PropertyName = 'Image.BitmapMargins'
+      StopValue.Left = -10.000000000000000000
+      StopValue.Top = -10.000000000000000000
+      StopValue.Right = -10.000000000000000000
+      StopValue.Bottom = -10.000000000000000000
+      Trigger = 'IsMouseOver=true'
+      TriggerInverse = 'IsMouseOver=false'
+    end
+  end
+end

@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{8DFC3AF6-F338-49EE-AFFA-6F354292131D}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Walls.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\VK_API\VKComponents.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\#Default\Новая папка (8)\SampleUWP.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="Walls">
+        <MSBuild Projects="Walls.dproj"/>
+    </Target>
+    <Target Name="Walls:Clean">
+        <MSBuild Projects="Walls.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Walls:Make">
+        <MSBuild Projects="Walls.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VKComponents">
+        <MSBuild Projects="..\VK_API\VKComponents.dproj"/>
+    </Target>
+    <Target Name="VKComponents:Clean">
+        <MSBuild Projects="..\VK_API\VKComponents.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VKComponents:Make">
+        <MSBuild Projects="..\VK_API\VKComponents.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SampleUWP">
+        <MSBuild Projects="..\#Default\Новая папка (8)\SampleUWP.dproj"/>
+    </Target>
+    <Target Name="SampleUWP:Clean">
+        <MSBuild Projects="..\#Default\Новая папка (8)\SampleUWP.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SampleUWP:Make">
+        <MSBuild Projects="..\#Default\Новая папка (8)\SampleUWP.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="Walls;VKComponents;SampleUWP"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="Walls:Clean;VKComponents:Clean;SampleUWP:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="Walls:Make;VKComponents:Make;SampleUWP:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
