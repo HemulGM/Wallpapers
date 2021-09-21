@@ -84,7 +84,7 @@ begin
   AniIndicatorLoading.Enabled := False;
   AniIndicatorLoading.Visible := False;
   TAnimator.AnimateFloat(ImagePreview, 'Opacity', 1);
-  TAnimator.AnimateFloat(ImagePreviewLoad, 'Opacity', 0);
+  TAnimator.AnimateFloat(ImagePreviewLoad, 'Opacity', 0, 2);
   LabelLoadError.Visible := False;
 end;
 
@@ -108,20 +108,22 @@ begin
     var
       Mem: TMemoryStream;
       Succ: Boolean;
+      SelfTask: ITask;
     begin
+      SelfTask := TTask.CurrentTask;
+      //TCustomCanvasD2D.SharedDevice.Flush;
       Succ := False;
       try
         Mem := Get(Url);
         try
           if Mem.Size > 0 then
           begin
-            if TTask.CurrentTask.Status <> TTaskStatus.Canceled then
+            if SelfTask.Status <> TTaskStatus.Canceled then
               TThread.Synchronize(nil,
                 procedure
                 begin
+                  if SelfTask.Status <> TTaskStatus.Canceled then
                   try
-                    FLoading := False;
-                    TCustomCanvasD2D.SharedDevice.Flush;
                     ImagePreview.Bitmap.LoadFromStream(Mem);
                     AfterLoad;
                     Succ := True;
@@ -136,7 +138,8 @@ begin
       except
         Succ := False;
       end;
-      if not Succ then
+      FLoading := False;
+      if (SelfTask.Status <> TTaskStatus.Canceled) and (not Succ) then
         AfterLoadError;
     end);
 end;
@@ -240,7 +243,7 @@ procedure TFormMain.FOnImageClick(Sender: TObject);
 var
   Frame: TFrameImage absolute Sender;
 begin
-  if Frame.Tag = 1 then
+  {if Frame.Tag = 1 then
     Exit;
   Frame.Tag := 1;
   TAnimator.AnimateFloatWait(Frame, 'Opacity', 0);
@@ -249,12 +252,16 @@ begin
   TimerRecalcPos.Enabled := False;
   TimerRecalcPos.Enabled := True;
   TimerRecalcPosTimer(TimerRecalcPos);
-  Exit;
+  Exit;    }
+
+  LayoutPreview.Opacity := 0;
   LayoutPreview.Visible := True;
+  TAnimator.AnimateFloat(LayoutPreview, 'Opacity', 1);
   AniIndicatorLoading.Enabled := True;
   AniIndicatorLoading.Visible := True;
   RectanglePreviewBG.Opacity := 0;
   ImagePreviewLoad.Opacity := 0;
+  ImagePreview.Opacity := 0;
   TAnimator.AnimateFloat(ImagePreviewLoad, 'Opacity', 1);
   ImagePreviewLoad.Bitmap.Assign(Frame.Image.Bitmap);
   ImagePreview.Bitmap.Assign(nil);
@@ -264,8 +271,96 @@ begin
   FloatAnimationPreviewBGOp.Enabled := True;
 end;
 
+type
+  TMyContainer<T> = class
+  private
+    type
+      TEnumerator = class
+      public
+        Container: TMyContainer<T>;
+        Index: Integer;
+        constructor Create(AContainer: TMyContainer<T>); overload;
+        function GetCurrent: T;
+        function MoveNext: Boolean;
+        property Current: T read GetCurrent;
+      end;
+  public
+    FProc: TFunc<T, T>;
+    Values: TArray<T>;
+    function GetEnumerator: TEnumerator; overload;
+    function Foreach(Proc: TFunc<T, T>): TMyContainer<T>;
+  end;
+
+{ TMyContainer<T> }
+
+function TMyContainer<T>.GetEnumerator: TEnumerator;
+begin
+  Result := TEnumerator.Create(Self);
+end;
+
+function TMyContainer<T>.Foreach(Proc: TFunc<T, T>): TMyContainer<T>;
+begin
+  FProc := Proc;
+end;
+
+constructor TMyContainer<T>.TEnumerator.Create(AContainer: TMyContainer<T>);
+begin
+  inherited Create;
+  Container := AContainer;
+  Index := -1;
+end;
+
+function TMyContainer<T>.TEnumerator.MoveNext: Boolean;
+begin
+  Result := Index < High(Container.Values);
+  if Result then
+    Inc(Index);
+end;
+
+function TMyContainer<T>.TEnumerator.GetCurrent: T;
+begin
+  if Assigned(Container.FProc) then
+    Result := Container.FProc(Container.Values[Index])
+  else
+    Result := Container.Values[Index];
+end;
+
+function Range(const Count: Integer): TArray<Integer>; overload;
+begin
+  SetLength(Result, Count);
+  for var i := 1 to Count do
+    Result[i - 1] := i;
+end;
+
+function Range(const Start, Stop: Integer): TArray<Integer>; overload;
+begin
+  SetLength(Result, (Stop - Start + 1));
+  for var i := Start to Stop do
+    Result[i - 1] := i;
+end;
+
+type
+  TEnumHelp = class
+    class function Sequence<T>(const Items: TArray<T>): TMyContainer<T>;
+  end;
+
+class function TEnumHelp.Sequence<T>(const Items: TArray<T>): TMyContainer<T>;
+begin
+  Result := TMyContainer<T>.Create;
+  Result.Values := Items;
+end;
+
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
+  var seq := TEnumHelp.Sequence<Integer>(Range(2));
+  for var i in seq.Foreach(
+    function(Value: Integer): Integer
+    begin
+      Result := Value * 2;
+    end) do
+    ShowMessage(i.ToString);
+  seq.Free;
+
   FAPI := TWallpapersAPI.Create(Self);
   FAPI.Token := '46f2a217fd526109ee156ce87b667eb5';
   VertScrollBoxItems.AniCalculations.Animation := True;
@@ -290,6 +385,7 @@ end;
 
 procedure TFormMain.LayoutPreviewClick(Sender: TObject);
 begin
+  TAnimator.AnimateFloatWait(LayoutPreview, 'Opacity', 0);
   LayoutPreview.Visible := False;
 end;
 

@@ -73,6 +73,7 @@ begin
     Image.Height := LayoutClient.Width * (Image.Bitmap.Height / Image.Bitmap.Width);
   end;
   TAnimator.AnimateFloat(Image, 'Opacity', 1);
+  TAnimator.AnimateFloat(RectangleBG, 'Opacity', 0, 2);
 end;
 
 constructor TFrameImage.Create(AOwner: TComponent);

@@ -12,7 +12,11 @@ uses
 {$R *.res}
 
 begin
+  //GlobalUseDX := False;
+  GlobalUseGDIPlusClearType := True;
+  //GlobalUseDirect2D := True;
   //GlobalUseGPUCanvas := True;
+
   Application.Initialize;
   Application.CreateForm(TFormMain, FormMain);
   Application.Run;
