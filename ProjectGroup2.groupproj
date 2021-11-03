@@ -9,9 +9,6 @@
         <Projects Include="..\VK_API\VKComponents.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="..\#Default\Новая папка (8)\SampleUWP.dproj">
-            <Dependencies/>
-        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -38,23 +35,14 @@
     <Target Name="VKComponents:Make">
         <MSBuild Projects="..\VK_API\VKComponents.dproj" Targets="Make"/>
     </Target>
-    <Target Name="SampleUWP">
-        <MSBuild Projects="..\#Default\Новая папка (8)\SampleUWP.dproj"/>
-    </Target>
-    <Target Name="SampleUWP:Clean">
-        <MSBuild Projects="..\#Default\Новая папка (8)\SampleUWP.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="SampleUWP:Make">
-        <MSBuild Projects="..\#Default\Новая папка (8)\SampleUWP.dproj" Targets="Make"/>
-    </Target>
     <Target Name="Build">
-        <CallTarget Targets="Walls;VKComponents;SampleUWP"/>
+        <CallTarget Targets="Walls;VKComponents"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Walls:Clean;VKComponents:Clean;SampleUWP:Clean"/>
+        <CallTarget Targets="Walls:Clean;VKComponents:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Walls:Make;VKComponents:Make;SampleUWP:Make"/>
+        <CallTarget Targets="Walls:Make;VKComponents:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

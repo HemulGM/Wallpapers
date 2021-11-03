@@ -157,9 +157,12 @@ begin
       OnClick := FOnImageClick;
       Url := Item.UrlImage;
       LoadImage(Item.UrlThumb);
+      RectangleBG.Fill.Color := TAlphaColorRec.Null;// TAlphaColorF.Create(Random(128) / 255, Random(128) / 255, Random(128) / 255, 1).ToAlphaColor;
+      Position.Y := LayoutItems.Height;
+      Position.X := Random(Round(LayoutItems.Width));
     end;
   end;
-  TimerRecalcPosTimer(nil);
+  TimerRecalcPosTimer(TimerRecalcPos);
 end;
 
 procedure TFormMain.LoadImages;
@@ -243,17 +246,6 @@ procedure TFormMain.FOnImageClick(Sender: TObject);
 var
   Frame: TFrameImage absolute Sender;
 begin
-  {if Frame.Tag = 1 then
-    Exit;
-  Frame.Tag := 1;
-  TAnimator.AnimateFloatWait(Frame, 'Opacity', 0);
-  Frame.Parent := nil;
-  Frame.DisposeOf;
-  TimerRecalcPos.Enabled := False;
-  TimerRecalcPos.Enabled := True;
-  TimerRecalcPosTimer(TimerRecalcPos);
-  Exit;    }
-
   LayoutPreview.Opacity := 0;
   LayoutPreview.Visible := True;
   TAnimator.AnimateFloat(LayoutPreview, 'Opacity', 1);
@@ -271,96 +263,8 @@ begin
   FloatAnimationPreviewBGOp.Enabled := True;
 end;
 
-type
-  TMyContainer<T> = class
-  private
-    type
-      TEnumerator = class
-      public
-        Container: TMyContainer<T>;
-        Index: Integer;
-        constructor Create(AContainer: TMyContainer<T>); overload;
-        function GetCurrent: T;
-        function MoveNext: Boolean;
-        property Current: T read GetCurrent;
-      end;
-  public
-    FProc: TFunc<T, T>;
-    Values: TArray<T>;
-    function GetEnumerator: TEnumerator; overload;
-    function Foreach(Proc: TFunc<T, T>): TMyContainer<T>;
-  end;
-
-{ TMyContainer<T> }
-
-function TMyContainer<T>.GetEnumerator: TEnumerator;
-begin
-  Result := TEnumerator.Create(Self);
-end;
-
-function TMyContainer<T>.Foreach(Proc: TFunc<T, T>): TMyContainer<T>;
-begin
-  FProc := Proc;
-end;
-
-constructor TMyContainer<T>.TEnumerator.Create(AContainer: TMyContainer<T>);
-begin
-  inherited Create;
-  Container := AContainer;
-  Index := -1;
-end;
-
-function TMyContainer<T>.TEnumerator.MoveNext: Boolean;
-begin
-  Result := Index < High(Container.Values);
-  if Result then
-    Inc(Index);
-end;
-
-function TMyContainer<T>.TEnumerator.GetCurrent: T;
-begin
-  if Assigned(Container.FProc) then
-    Result := Container.FProc(Container.Values[Index])
-  else
-    Result := Container.Values[Index];
-end;
-
-function Range(const Count: Integer): TArray<Integer>; overload;
-begin
-  SetLength(Result, Count);
-  for var i := 1 to Count do
-    Result[i - 1] := i;
-end;
-
-function Range(const Start, Stop: Integer): TArray<Integer>; overload;
-begin
-  SetLength(Result, (Stop - Start + 1));
-  for var i := Start to Stop do
-    Result[i - 1] := i;
-end;
-
-type
-  TEnumHelp = class
-    class function Sequence<T>(const Items: TArray<T>): TMyContainer<T>;
-  end;
-
-class function TEnumHelp.Sequence<T>(const Items: TArray<T>): TMyContainer<T>;
-begin
-  Result := TMyContainer<T>.Create;
-  Result.Values := Items;
-end;
-
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
-  var seq := TEnumHelp.Sequence<Integer>(Range(2));
-  for var i in seq.Foreach(
-    function(Value: Integer): Integer
-    begin
-      Result := Value * 2;
-    end) do
-    ShowMessage(i.ToString);
-  seq.Free;
-
   FAPI := TWallpapersAPI.Create(Self);
   FAPI.Token := '46f2a217fd526109ee156ce87b667eb5';
   VertScrollBoxItems.AniCalculations.Animation := True;
@@ -448,8 +352,8 @@ begin
         begin
           if Sender <> nil then
           begin
-            TAnimator.AnimateFloat(Control, 'Position.X', NC, 0.5, TAnimationType.out, TInterpolationType.Back);
-            TAnimator.AnimateFloat(Control, 'Position.Y', NR, 0.5, TAnimationType.out, TInterpolationType.Back);
+            TAnimator.AnimateFloat(Control, 'Position.X', NC, 1, TAnimationType.Out, TInterpolationType.Back);
+            TAnimator.AnimateFloat(Control, 'Position.Y', NR, 1, TAnimationType.Out, TInterpolationType.Back);
           end
           else
           begin
