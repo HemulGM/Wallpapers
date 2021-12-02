@@ -145,10 +145,13 @@ begin
 end;
 
 procedure TFormMain.AppendImages(Items: TArray<TWallpaperItem>);
+var
+  Frame: TFrameImage;
 begin
   for var Item in Items do
   begin
-    with TFrameImage.Create(Self) do
+    Frame := TFrameImage.Create(Self);
+    with Frame do
     begin
       Name := '';
       Parent := LayoutItems;
@@ -157,7 +160,7 @@ begin
       OnClick := FOnImageClick;
       Url := Item.UrlImage;
       LoadImage(Item.UrlThumb);
-      RectangleBG.Fill.Color := TAlphaColorRec.Null;// TAlphaColorF.Create(Random(128) / 255, Random(128) / 255, Random(128) / 255, 1).ToAlphaColor;
+      RectangleBG.Fill.Color := TAlphaColorRec.Null; // TAlphaColorF.Create(Random(128) / 255, Random(128) / 255, Random(128) / 255, 1).ToAlphaColor;
       Position.Y := LayoutItems.Height;
       Position.X := Random(Round(LayoutItems.Width));
     end;
@@ -352,8 +355,8 @@ begin
         begin
           if Sender <> nil then
           begin
-            TAnimator.AnimateFloat(Control, 'Position.X', NC, 1, TAnimationType.Out, TInterpolationType.Back);
-            TAnimator.AnimateFloat(Control, 'Position.Y', NR, 1, TAnimationType.Out, TInterpolationType.Back);
+            TAnimator.AnimateFloat(Control, 'Position.X', NC, 1, TAnimationType.out, TInterpolationType.Back);
+            TAnimator.AnimateFloat(Control, 'Position.Y', NR, 1, TAnimationType.out, TInterpolationType.Back);
           end
           else
           begin
