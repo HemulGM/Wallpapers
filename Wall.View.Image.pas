@@ -31,7 +31,7 @@ type
     property Url: string read FUrl write SetUrl;
   end;
 
-function Get(URL: string): TMemoryStream;
+function Get(Url: string): TMemoryStream;
 
 implementation
 
@@ -40,24 +40,26 @@ uses
 
 {$R *.fmx}
 
-function Get(URL: string): TMemoryStream;
+function Get(Url: string): TMemoryStream;
 var
   HTTP: THTTPClient;
 begin
   Result := TMemoryStream.Create;
-  if URL.IsEmpty then
+  if Url.IsEmpty then
     Exit;
   HTTP := THTTPClient.Create;
-  HTTP.HandleRedirects := True;
   try
     try
-      if (HTTP.Get(URL, Result).StatusCode = 200) and (Result.Size > 0) then
-        Result.Position := 0;
-    finally
-      HTTP.Free;
-    end;
-  except
+      HTTP.HandleRedirects := True;
+      if (HTTP.Get(Url, Result).StatusCode = 200) and (Result.Size > 0) then
+        Result.Position := 0
+      else
+        Result.Clear;
+    except
     //
+    end;
+  finally
+    HTTP.Free;
   end;
 end;
 
@@ -104,19 +106,24 @@ begin
     procedure
     var
       Mem: TMemoryStream;
+      SelfTask: ITask;
     begin
+      SelfTask := TTask.CurrentTask;
       Mem := Get(Url);
       try
         if Mem.Size > 0 then
         begin
-          if TTask.CurrentTask.Status <> TTaskStatus.Canceled then
+          if SelfTask.Status <> TTaskStatus.Canceled then
             TThread.Synchronize(nil,
               procedure
               begin
                 try
-                  FLoading := False;
-                  Image.Bitmap.LoadFromStream(Mem);
-                  AfterLoad;
+                  if SelfTask.Status <> TTaskStatus.Canceled then
+                  begin
+                    FLoading := False;
+                    Image.Bitmap.LoadFromStream(Mem);
+                    AfterLoad;
+                  end;
                 except
                   //
                 end;
@@ -124,6 +131,7 @@ begin
         end;
       finally
         Mem.Free;
+        FTask := nil;
       end;
     end);
 end;

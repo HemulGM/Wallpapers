@@ -33,6 +33,7 @@ type
     TimerHeadDelay: TTimer;
     AniIndicatorLoadMore: TAniIndicator;
     AniIndicatorLoad: TAniIndicator;
+    Layout1: TLayout;
     procedure FormCreate(Sender: TObject);
     procedure ButtonLoadRandomClick(Sender: TObject);
     procedure TimerRecalcPosTimer(Sender: TObject);
@@ -151,6 +152,7 @@ begin
   for var Item in Items do
   begin
     Frame := TFrameImage.Create(Self);
+    Frame.DisableDisappear := True;
     with Frame do
     begin
       Name := '';
